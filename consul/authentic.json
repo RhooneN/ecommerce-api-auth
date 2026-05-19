@@ -1,0 +1,8 @@
+{
+    "name": "authentic",
+    "port": 8000,
+    "check": {
+      "http": "http://authentic:8000/health/",
+      "interval": "10s"
+      }
+}
