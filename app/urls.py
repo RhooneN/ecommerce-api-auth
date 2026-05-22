@@ -13,7 +13,7 @@ router.register(r'profiles', ProfileViewSet, basename='profile')
 
 urlpatterns = [
     path('register/', views.UserCreateView.as_view(), name='user-create'),
-    path('login/', views.CustomerLoginView.as_view(), name='login'),
+    path('login/', views.LoginView.as_view(), name='login'),
     path('', include(router.urls)),
     
     path("health/", views.health),
