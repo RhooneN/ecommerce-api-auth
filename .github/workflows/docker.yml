@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - RhooneN
+  workflow_dispatch:
 
 jobs:
   docker:
