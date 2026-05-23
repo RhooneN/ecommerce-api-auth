@@ -1,0 +1,33 @@
+name: Build and Push Shopping Cart Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t ghcr.io/YOUR_GITHUB_USERNAME/shopping_cart:latest .
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/YOUR_GITHUB_USERNAME/shopping_cart:latest
