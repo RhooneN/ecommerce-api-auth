@@ -1,9 +1,9 @@
-name: Build and Push Shopping Cart Image
+name: Build and Push Authentic Image
 
 on:
   push:
     branches:
-      - main
+      - RhooneN
 
 jobs:
   docker:
@@ -26,8 +26,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/YOUR_GITHUB_USERNAME/shopping_cart:latest .
+          docker build -t ghcr.io/RhooneN/ecommerce-api-auth:latest .
 
       - name: Push Docker image
         run: |
-          docker push ghcr.io/YOUR_GITHUB_USERNAME/shopping_cart:latest
+          docker push ghcr.io/RhooneN/ecommerce-api-auth:latest
