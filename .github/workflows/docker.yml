@@ -31,4 +31,4 @@ jobs:
 
       - name: Push Docker image
         run: |
-          docker push ghcr.io/RhooneN/ecommerce-api-auth:latest
+          docker push ghcr.io/rhoonen/ecommerce-api-auth:latest
