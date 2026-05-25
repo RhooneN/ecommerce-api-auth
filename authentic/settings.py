@@ -30,16 +30,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ~ SECRET_KEY = 'django-insecure-&u@&@soryoakqd99#8n!zj6a1&l2bd($x53oz#zj3^k0*s-dxa'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = ['payment', "orders", "notif", '127.0.0.1', "api-auth-gjfj.onrender.com",
-    "authentic",
-    "shopping_cart",
-    "catalog",
-    "localhost",
-    'auth-service',  # For Docker compatibility
-    'app'
-    ] 
+ALLOWED_HOSTS = ["*"] if DEBUG else ".onrender.com"
 
 
 # Application definition
