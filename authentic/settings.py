@@ -32,7 +32,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = ["*"] if DEBUG else ".onrender.com"
+ALLOWED_HOSTS = ["*"] if DEBUG else [".onrender.com"]
 
 
 # Application definition
