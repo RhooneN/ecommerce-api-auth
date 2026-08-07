@@ -1,6 +1,7 @@
 import jwt
 from datetime import datetime, timedelta
 from django.conf import settings
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 def create_jwt_token(user_data):
     """Simple JWT token creation"""
@@ -15,6 +16,6 @@ def create_jwt_token(user_data):
 def verify_jwt_token(token):
     """Simple JWT token verification"""
     try:
-        return jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
-    except jwt.InvalidTokenError:
+        return JWTAuthentication().get_validated_token(token)
+    except InvalidToken:
         return None

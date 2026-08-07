@@ -22,7 +22,8 @@ class SimpleAuthMiddleware:
             return JsonResponse({'error': 'Invalid token'}, status=401)
         
         # Add user info to request
-        request.user_id = payload['user_id']
-        request.is_admin = payload.get('is_admin', False)
+        request.user_id = validated_token["user_id"]
+        request.is_admin = validated_token.get("is_admin", False)
+        request.is_system = validated_token.get("is_system", False)
         return self.get_response(request)
 

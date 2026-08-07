@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopFlow - Architecture Microservices E-Commerce</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --accent1: #8b5cf6;
+            --accent2: #ec4899;
+            --accent3: #f59e0b;
+            --accent4: #10b981;
+            --accent5: #3b82f6;
+            --accent6: #ef4444;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0 2rem;
+        }
+
+        .nav-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--primary), var(--accent1));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-badge {
+            background: linear-gradient(135deg, var(--primary), var(--accent1));
+            color: white;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* Hero */
+        .hero {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 80px 2rem 60px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #ede9fe;
+            color: var(--primary-dark);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.3); }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--accent2), var(--accent3));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 650px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .hero-stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Architecture Diagram */
+        .architecture-section {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 40px 2rem 60px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-header h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .arch-row {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            align-items: stretch;
+        }
+
+        .arch-gateway {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white;
+            border-radius: var(--radius);
+            padding: 28px 40px;
+            text-align: center;
+            max-width: 400px;
+            margin: 0 auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .arch-gateway h3 {
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+
+        .arch-gateway p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .arch-arrow {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .arch-services {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            width: 100%;
+        }
+
+        .arch-service {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            cursor: default;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .arch-service:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .arch-service-icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+
+        .service-auth { border-color: #818cf8; }
+        .service-auth:hover { background: #eef2ff; }
+        .service-product { border-color: #f472b6; }
+        .service-product:hover { background: #fdf2f8; }
+        .service-cart { border-color: #fbbf24; }
+        .service-cart:hover { background: #fffbeb; }
+        .service-order { border-color: #34d399; }
+        .service-order:hover { background: #ecfdf5; }
+        .service-payment { border-color: #60a5fa; }
+        .service-payment:hover { background: #eff6ff; }
+        .service-notif { border-color: #f87171; }
+        .service-notif:hover { background: #fef2f2; }
+
+        .arch-db-row {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .arch-db {
+            background: #f1f5f9;
+            border: 2px dashed #cbd5e1;
+            border-radius: var(--radius-sm);
+            padding: 16px 28px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Service Cards Detail */
+        .services-detail {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 40px 2rem 60px;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 24px;
+        }
+
+        .service-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .service-card:hover {
+            box-shadow: var(--shadow-xl);
+            transform: translateY(-2px);
+        }
+
+        .service-card-header {
+            padding: 24px 24px 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .service-card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            flex-shrink: 0;
+        }
+
+        .icon-auth { background: #eef2ff; color: #6366f1; }
+        .icon-product { background: #fdf2f8; color: #ec4899; }
+        .icon-cart { background: #fffbeb; color: #f59e0b; }
+        .icon-order { background: #ecfdf5; color: #10b981; }
+        .icon-payment { background: #eff6ff; color: #3b82f6; }
+        .icon-notif { background: #fef2f2; color: #ef4444; }
+
+        .service-card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .service-card-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .service-card-body {
+            padding: 0 24px 24px;
+        }
+
+        .endpoint-list {
+            list-style: none;
+        }
+
+        .endpoint-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            background: #f8fafc;
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .endpoint-item:hover {
+            background: #f1f5f9;
+        }
+
+        .method-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: white;
+            min-width: 48px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .method-GET { background: #10b981; }
+        .method-POST { background: #3b82f6; }
+        .method-PUT, .method-PATCH { background: #f59e0b; }
+        .method-DELETE { background: #ef4444; }
+
+        .endpoint-path-text {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .service-card-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #f1f5f9;
+            color: var(--text-secondary);
+        }
+
+        .tag-health {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .tag-docs {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        /* Features Section */
+        .features-section {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 40px 2rem 60px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 28px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        .feature-card h4 {
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* CTA */
+        .cta-section {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 40px 2rem 80px;
+            text-align: center;
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, var(--primary), var(--accent1));
+            border-radius: 24px;
+            padding: 60px 40px;
+            color: white;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .cta-box h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .cta-box p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-white {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-white:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid rgba(255,255,255,0.5);
+            color: white;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 30px 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            .hero-stats {
+                gap: 1.5rem;
+            }
+            .hero-stat-number {
+                font-size: 2rem;
+            }
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+            .arch-services {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <div class="nav-logo-icon">⚡</div>
+                ShopFlow
+            </a>
+            <ul class="nav-links">
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#features">Fonctionnalités</a></li>
+                <li><span class="nav-badge">v1.0 · En ligne</span></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            Tous les services opérationnels
+        </div>
+        <h1>
+            Architecture E-Commerce<br>
+            <span class="hero-gradient">Microservices & Cloud Native</span>
+        </h1>
+        <p>
+            Une plateforme e-commerce complète construite sur une architecture microservices robuste. 
+            Chaque service est indépendant, scalable et communique via des APIs RESTful documentées avec OpenAPI 3.0.
+        </p>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-number">6</div>
+                <div class="hero-stat-label">Microservices</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number">25+</div>
+                <div class="hero-stat-label">Endpoints API</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number">100%</div>
+                <div class="hero-stat-label">Health Check</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number">OpenAPI</div>
+                <div class="hero-stat-label">Documentation</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="architecture-section" id="architecture">
+        <div class="section-header">
+            <h2>🏗️ Architecture Microservices</h2>
+            <p>Chaque service est autonome avec sa propre base de données, health check et documentation Swagger</p>
+        </div>
+        <div class="arch-diagram">
+            <div class="arch-gateway">
+                <h3>🔐 API Gateway</h3>
+                <p>Authentification & Routage centralisé</p>
+            </div>
+            <div class="arch-arrow">⬇</div>
+            <div class="arch-row">
+                <div class="arch-services">
+                    <div class="arch-service service-auth">
+                        <div class="arch-service-icon">🔑</div>
+                        Authentification<br><small>Register / Login</small>
+                    </div>
+                    <div class="arch-service service-product">
+                        <div class="arch-service-icon">📦</div>
+                        Produits<br><small>CRUD & Recherche</small>
+                    </div>
+                    <div class="arch-service service-cart">
+                        <div class="arch-service-icon">🛒</div>
+                        Panier<br><small>Gestion articles</small>
+                    </div>
+                    <div class="arch-service service-order">
+                        <div class="arch-service-icon">📋</div>
+                        Commandes<br><small>Cycle de vie</small>
+                    </div>
+                    <div class="arch-service service-payment">
+                        <div class="arch-service-icon">💳</div>
+                        Paiement<br><small>Exécution & annulation</small>
+                    </div>
+                    <div class="arch-service service-notif">
+                        <div class="arch-service-icon">🔔</div>
+                        Notifications<br><small>Alertes utilisateur</small>
+                    </div>
+                </div>
+            </div>
+            <div class="arch-arrow">⬇</div>
+            <div class="arch-db-row">
+                <div class="arch-db">🗄️ PostgreSQL</div>
+                <div class="arch-db">⚡ Redis Cache</div>
+                <div class="arch-db">📨 RabbitMQ / Celery</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="services-detail" id="services">
+        <div class="section-header">
+            <h2>🔌 Endpoints & APIs</h2>
+            <p>Documentation interactive disponible via Swagger UI et ReDoc pour chaque service</p>
+        </div>
+        <div class="service-grid">
+            <!-- Auth Service -->
+            <div class="service-card">
+                <div class="service-card-header">
+                    <div class="service-card-icon icon-auth">🔑</div>
+                    <div>
+                        <div class="service-card-title">Service Authentification</div>
+                        <div class="service-card-subtitle">Gestion des utilisateurs</div>
+                    </div>
+                </div>
+                <div class="service-card-body">
+                    <ul class="endpoint-list">
+                        <li class="endpoint-item">
+                            <span class="method-badge method-POST">POST</span>
+                            <span class="endpoint-path-text">/register/</span>
+                        </li>
+                        <li class="endpoint-item">
+                            <span class="method-badge method-POST">POST</span>
+                            <span class="endpoint-path-text">/login/</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="service-card-footer">
+                    <span class="tag tag-health">✅ Health Check</span>
+                    <span class="tag tag-docs">📖 Swagger</span>
+                    <span class="tag tag-docs">📄 ReDoc</span>
+                </div>
+            </div>
+
+            <!-- Product Service -->
+            <div class="service-card">
+                <div class="service-card-header">
+                    <div class="service-card-icon icon-product">📦</div>
+                    <div>
+                        <div class="service-card-title">Service Produits</div>
+                        <div class="service-card-subtitle">Catalogue & recherche</div>
+                    </div>
+                </div>
+                <div class="service-card-body">
+                    <ul class="endpoint-list">
+                        <li class="endpoint-item">
+                            <span class="method-badge method-GET">GET</span>
+                            <span class="endpoint-path-text">/categories/</span>
+                        </li>
+                        <li class="endpoint-item">
+                            <span class="method-badge method-GET">GET</span>
+                            <span class="endpoint-path-text">/products/</span>
+                        </li>
+                        <li class="endpoint-item">
+                            <span class="method-badge method-POST">POST</span>
+                            <span class="endpoint-path-text">/products/</span>
+                        </li>
+                        <li class="endpoint-item">
+                            <span class="method-badge method-GET">GET</span>
+                            <span class="endpoint-path-text">/products/search/</span>
+                        </li>
+                        <li class="endpoint-item">
+                            <span class="method-badge method-GET">GET</span>
+                            <span class="endpoint-path-text">/products/recommendations/</span>
+                        </li>
+                        <li class="endpoint-item">
+                            <span class="method-badge method-GET">GET</span>
+                            <span class="endpoint-path-text">/bulk/</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="service-card-footer">
+                    <span class="tag tag-health">✅ Health Check</span>
+                    <span class="tag tag-docs">📖 Swagger</span>
+                    <span class="tag tag-docs">📄 ReDoc</span>
+                </div>
+            </div>
+
+            <!-- Cart Service -->
+            <div class="service-card">
+                <div class="service-card-header">
+                    <div class="service-card-icon icon-cart">🛒</div>
+                    <div>
+                        <div class="service-card-title">Service Panier</div>
+                        <div class="service-card-subtitle">Gestion du panier utilisateur</div>
+                    </div>
+                </div>
+                <div class="service-card-body">
+                    <ul class="endpoint-list">
+                        <li class="endpoint-item">
+                            <span class="method-badge method-GET">GET</span>
+                            <span class="endpoint-path-text">/cart/</span>
+                        </li>
+                        <li class="endpoint-item">
+                            <span class="method-badge method-POST">POST</span>
+                            <span class="endpoint-path-text">/cart/add/</span>
+                        </li>
+                        <li class="endpoint-item">
+                            <span class="method-badge method-PUT">PUT</span>
+                            <span class="endpoint-path-text">/cart/{product_id}/</span>
+                        </li>
+                        <li class="endpoint-item">
+                            <span class="method-badge method-DELETE">DEL</span>
+                            <span class="endpoint-path-text">/cart/remove/{id}/</span>
+                        </li>
+                        <li class="endpoint-item">
+                            <span class="method-badge method-DELETE">DEL</span>
+                            <span class="endpoint-path-text">/cart/empty/</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="service-card-footer">
+                    <span class="tag tag-health">✅ Health Check</span>
+                    <span class="tag tag-docs">📖 Swagger</span>
+                    <span class="tag tag-docs">📄 ReDoc</span>
+                </div>
+            </div>
+
+            <!-- Order Service -->
+            <div class="service-card">
+                <div class="service-card-header">
+                    <div class="service-card-icon icon-order">📋</div>
+                    <div>
+                        <div class="service-card-title">Service Commandes</div>
+                        <div class="service-card-subtitle">Cycle de vie complet</div>
+                    </div>
+                </div>
+                <div class="service-card-body">
+                    <ul class="endpoint-list">
+                        <li class="endpoint-item">
+                            <span class="method-badge method-GET">GET</span>
+                            <span class="endpoint-path-text">/orders/</span>
+                        </li>
+                        <li class="endpoint-item">
+                            <span class="method-badge method-POST">POST</span>
+                            <span class="endpoint-path-text">/orders/</span>
+                        </li>
+                        <li class="endpoint-item">
+                            <span class="method-badge method-GET">GET</span>
+                            <span class="endpoint-path-text">/orders/{signature}/</span>
+                        </li>
+                        <li class="endpoint-item">
+                            <span class="method-badge method-GET">GET</span>
+                            <span class="endpoint-path-text">/orders/{signature}/status/</span>
+                        </li>
+                        <li class="endpoint-item">
+                            <span class="method-badge method-DELETE">DEL</span>
+                            <span class="endpoint-path-text">/orders/{id}/cancel/</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="service-card-footer">
+                    <span class="tag tag-health">✅ Health Check</span>
+                    <span class="tag tag-docs">📖 Swagger</span>
+                    <span class="tag tag-docs">📄 ReDoc</span>
+                </div>
+            </div>
+
+            <!-- Payment Service -->
+            <div class="service-card">
+                <div class="service-card-header">
+                    <div class="service-card-icon icon-payment">💳</div>
+                    <div>
+                        <div class="service-card-title">Service Paiement</div>
+                        <div class="service-card-subtitle">Transactions & statuts</div>
+                    </div>
+                </div>
+                <div class="service-card-body">
+                    <ul class="endpoint-list">
+                        <li class="endpoint-item">
+                            <span class="method-badge method-POST">POST</span>
+                            <span class="endpoint-path-text">/payment/</span>
+                        </li>
+                        <li class="endpoint-item">
+                            <span class="method-badge method-POST">POST</span>
+                            <span class="endpoint-path-text">/payment/execute/</span>
+                        </li>
+                        <li class="endpoint-item">
+                            <span class="method-badge method-POST">POST</span>
+                            <span class="endpoint-path-text">/payment/cancel/</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="service-card-footer">
+                    <span class="tag tag-health">✅ Health Check</span>
+                    <span class="tag tag-docs">📖 Swagger</span>
+                    <span class="tag tag-docs">📄 ReDoc</span>
+                </div>
+            </div>
+
+            <!-- Notification Service -->
+            <div class="service-card">
+                <div class="service-card-header">
+                    <div class="service-card-icon icon-notif">🔔</div>
+                    <div>
+                        <div class="service-card-title">Service Notifications</div>
+                        <div class="service-card-subtitle">Alertes & communications</div>
+                    </div>
+                </div>
+                <div class="service-card-body">
+                    <ul class="endpoint-list">
+                        <li class="endpoint-item">
+                            <span class="method-badge method-GET">GET</span>
+                            <span class="endpoint-path-text">/notifications/</span>
+                        </li>
+                        <li class="endpoint-item">
+                            <span class="method-badge method-POST">POST</span>
+                            <span class="endpoint-path-text">/notifications/</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="service-card-footer">
+                    <span class="tag tag-health">✅ Health Check</span>
+                    <span class="tag tag-docs">📖 Swagger</span>
+                    <span class="tag tag-docs">📄 ReDoc</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-section" id="features">
+        <div class="section-header">
+            <h2>⚡ Fonctionnalités Clés</h2>
+            <p>Ce qui rend cette architecture unique et professionnelle</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🏥</div>
+                <h4>Health Checks</h4>
+                <p>Chaque microservice expose un endpoint /health/ pour le monitoring en temps réel.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📖</div>
+                <h4>Documentation Auto</h4>
+                <p>Swagger UI & ReDoc générés automatiquement via OpenAPI 3.0 (Spectacular) pour chaque service.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <h4>Authentification</h4>
+                <p>Service dédié avec register/login, prêt pour JWT ou token-based authentication.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h4>Monitoring</h4>
+                <p>Architecture prête pour Prometheus, Grafana et alerting avec des health checks standardisés.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h4>Scalabilité</h4>
+                <p>Services indépendants déployables séparément, scaling horizontal selon la charge.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h4>Async & Events</h4>
+                <p>Webhook order_updater et tâches asynchrones pour les processus longs.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="cta-box">
+            <h2>Prêt à explorer l'API ?</h2>
+            <p>Consultez la documentation interactive Swagger pour chaque microservice et commencez à intégrer.</p>
+            <div class="cta-buttons">
+                <a href="#" class="btn btn-white">📖 Documentation Swagger</a>
+                <a href="#" class="btn btn-outline">📄 Spécification OpenAPI</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>🚀 ShopFlow Microservices Architecture · OpenAPI 3.0 · Django REST Framework · Tous droits réservés © 2026</p>
+    </footer>
+</body>
+</html>
